@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from '../../../../base/common/lifecycle.js';
-import { URI } from '../../../../base/common/uri.js';
 import { ServicesAccessor } from '../../../../editor/browser/editorExtensions.js';
-import { localize, localize2 } from '../../../../nls.js';
+import { localize } from '../../../../nls.js';
 import { Action2, registerAction2 } from '../../../../platform/actions/common/actions.js';
 import { Registry } from '../../../../platform/registry/common/platform.js';
 import { EditorPaneDescriptor, IEditorPaneRegistry } from '../../../browser/editor.js';
@@ -35,16 +34,16 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 				super({
 					id: 'workbench.action.openTestEditor',
 					title: {
-						...localize2('openTestEditor', "Open Test Editor"),
-						mnemonicTitle: localize({ key: 'miOpenTestEditor', comment: ['&& denotes a mnemonic'] }, "&&Open Test Editor"),
+						value: localize('openTestEditor', "Open Test Editor"),
+						original: 'Open Test Editor',
 					},
+					category: 'Developer',
+					f1: true,
 				});
 			}
 			run(accessor: ServicesAccessor) {
 				const editorService = accessor.get(IEditorService);
-				const resource = URI.parse('inmemory://model/testeditor');
 				editorService.openEditor({
-					resource,
 					options: {
 						override: TestEditor.ID,
 					}
@@ -54,4 +53,4 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 	}
 }
 
-registerWorkbenchContribution2(MyTestContribution.ID, MyTestContribution, WorkbenchPhase.AfterRestored);
+registerWorkbenchContribution2(MyTestContribution.ID, MyTestContribution, WorkbenchPhase.BlockStartup);
