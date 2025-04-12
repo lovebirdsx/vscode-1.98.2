@@ -10,9 +10,10 @@ import { Action2, registerAction2 } from '../../../../platform/actions/common/ac
 import { Registry } from '../../../../platform/registry/common/platform.js';
 import { EditorPaneDescriptor, IEditorPaneRegistry } from '../../../browser/editor.js';
 import { IWorkbenchContribution, registerWorkbenchContribution2, WorkbenchPhase } from '../../../common/contributions.js';
-import { EditorExtensions } from '../../../common/editor.js';
-import { IEditorService } from '../../../services/editor/common/editorService.js';
-import { TestEditor } from './testEditor.js';
+import { EditorExtensions, IEditorFactoryRegistry } from '../../../common/editor.js';
+import { TestEditor, TestEditorInput, TestEditorInputSerializer } from './testEditor.js';
+import { SyncDescriptor } from '../../../../platform/instantiation/common/descriptors.js';
+import { IEditorGroupsService } from '../../../services/editor/common/editorGroupsService.js';
 
 class MyTestContribution extends Disposable implements IWorkbenchContribution {
 	static readonly ID = 'workbench.contrib.myTest';
@@ -26,7 +27,13 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 				TestEditor.ID,
 				localize('textFileEditor', "Text File Editor")
 			),
-			[],
+			[new SyncDescriptor(TestEditorInput)],
+		));
+
+		// Register serializer to enable recovery on restart
+		this._register(Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(
+			TestEditorInput.ID,
+			TestEditorInputSerializer,
 		));
 
 		this._register(registerAction2(class extends Action2 {
@@ -41,13 +48,14 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 					f1: true,
 				});
 			}
+
 			run(accessor: ServicesAccessor) {
-				const editorService = accessor.get(IEditorService);
-				editorService.openEditor({
-					options: {
-						override: TestEditor.ID,
-					}
-				});
+				const editorGroupService = accessor.get(IEditorGroupsService);
+				const contents = ['Hello World!', 'Hello VSCode!', 'Hello Test Editor!', 'Hello Editor!', 'Hello Universe!'];
+				const randomIndex = Math.floor(Math.random() * contents.length);
+				const randomContent = contents[randomIndex];
+				const testEditorInput = new TestEditorInput(randomContent);
+				editorGroupService.activeGroup.openEditor(testEditorInput).catch(console.error);
 			}
 		}));
 	}
