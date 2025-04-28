@@ -14,6 +14,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"target": "es2022",
 		"useDefineForClassFields": false,
+		"jsx": "react",
 		"lib": [
 			"ES2022",
 			"DOM",

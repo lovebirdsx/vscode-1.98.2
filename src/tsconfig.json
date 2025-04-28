@@ -9,6 +9,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": false,
 		"outDir": "../out/vs",
+		"jsx": "react",
 		"types": [
 			"@webgpu/types",
 			"mocha",
@@ -29,6 +30,7 @@
 		"./*.ts",
 		"./typings",
 		"./vs/**/*.ts",
+		"./vs/**/*.tsx",
 		"./vscode-dts/vscode.proposed.*.d.ts",
 		"./vscode-dts/vscode.d.ts"
 	]

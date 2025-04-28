@@ -69,7 +69,8 @@ function createCompile(src: string, { build, emitError, transpileOnly, preserveE
 	function pipeline(token?: util.ICancellationToken) {
 		const bom = require('gulp-bom') as typeof import('gulp-bom');
 
-		const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+		// const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+		const tsFilter = util.filter(data => /\.tsx?$/.test(data.path));
 		const isUtf8Test = (f: File) => /(\/|\\)test(\/|\\).*utf8/.test(f.path);
 		const isRuntimeJs = (f: File) => f.path.endsWith('.js') && !f.path.includes('fixtures');
 		const isCSS = (f: File) => f.path.endsWith('.css') && !f.path.includes('fixtures');

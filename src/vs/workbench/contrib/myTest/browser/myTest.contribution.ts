@@ -14,6 +14,7 @@ import { EditorExtensions, IEditorFactoryRegistry } from '../../../common/editor
 import { TestEditor, TestEditorInput, TestEditorInputSerializer } from './testEditor.js';
 import { SyncDescriptor } from '../../../../platform/instantiation/common/descriptors.js';
 import { IEditorGroupsService } from '../../../services/editor/common/editorGroupsService.js';
+import { TestReactEditor, TestReactEditorInput, TestReactEditorInputSerializer } from './testReactEditor.js';
 
 class MyTestContribution extends Disposable implements IWorkbenchContribution {
 	static readonly ID = 'workbench.contrib.myTest';
@@ -25,7 +26,16 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 			EditorPaneDescriptor.create(
 				TestEditor,
 				TestEditor.ID,
-				localize('textFileEditor', "Text File Editor")
+				localize('testEditor', "Test Editor")
+			),
+			[new SyncDescriptor(TestEditorInput)],
+		));
+
+		this._register(Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).registerEditorPane(
+			EditorPaneDescriptor.create(
+				TestReactEditor,
+				TestReactEditor.ID,
+				localize('testReactEditor', "Test React Editor")
 			),
 			[new SyncDescriptor(TestEditorInput)],
 		));
@@ -34,6 +44,11 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 		this._register(Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(
 			TestEditorInput.ID,
 			TestEditorInputSerializer,
+		));
+
+		this._register(Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(
+			TestReactEditorInput.ID,
+			TestReactEditorInputSerializer,
 		));
 
 		this._register(registerAction2(class extends Action2 {
@@ -54,8 +69,31 @@ class MyTestContribution extends Disposable implements IWorkbenchContribution {
 				const contents = ['Hello World!', 'Hello VSCode!', 'Hello Test Editor!', 'Hello Editor!', 'Hello Universe!'];
 				const randomIndex = Math.floor(Math.random() * contents.length);
 				const randomContent = contents[randomIndex];
-				const testEditorInput = new TestEditorInput(randomContent);
-				editorGroupService.activeGroup.openEditor(testEditorInput).catch(console.error);
+				const input = new TestEditorInput(randomContent);
+				editorGroupService.activeGroup.openEditor(input).catch(console.error);
+			}
+		}));
+
+		this._register(registerAction2(class extends Action2 {
+			constructor() {
+				super({
+					id: 'workbench.action.openTestReactEditor',
+					title: {
+						value: localize('openTestReactEditor', "Open Test React Editor"),
+						original: 'Open Test React Editor',
+					},
+					category: 'Developer',
+					f1: true,
+				});
+			}
+
+			run(accessor: ServicesAccessor) {
+				const editorGroupService = accessor.get(IEditorGroupsService);
+				const contents = ['Hello World!', 'Hello VSCode!', 'Hello Test React Editor!', 'Hello Editor!', 'Hello Universe!'];
+				const randomIndex = Math.floor(Math.random() * contents.length);
+				const randomContent = contents[randomIndex];
+				const input = new TestReactEditorInput(randomContent);
+				editorGroupService.activeGroup.openEditor(input).catch(console.error);
 			}
 		}));
 	}

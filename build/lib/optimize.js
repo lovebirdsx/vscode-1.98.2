@@ -125,6 +125,40 @@ function bundleESMTask(opts) {
                     });
                 },
             };
+            const forceBundleReactPlugin = {
+                name: 'force-bundle-react',
+                setup(build) {
+                    // When resolving 'react', return an explicit 'external: false'
+                    // This tells esbuild to bundle it instead of respecting 'packages: external'
+                    // We limit this to imports originating from our source code.
+                    build.onResolve({ filter: /^react$/ }, async (args) => {
+                        console.log(`[forceBundleReactPlugin] Attempting to resolve 'react' imported by: ${args.importer}`); // <--- ADD LOG
+                        if (args.importer?.startsWith(path_1.default.join(REPO_ROOT_PATH, opts.src))) {
+                            // Resolve normally, but force bundling
+                            const resolved = await build.resolve(args.path, { resolveDir: args.resolveDir, kind: args.kind });
+                            if (resolved.path) {
+                                console.log(`[forceBundleReactPlugin] Forcing bundle for 'react' at path: ${resolved.path}`); // <--- ADD LOG
+                                return { path: resolved.path, external: false };
+                            }
+                        }
+                        console.log(`[forceBundleReactPlugin] Keeping 'react' external for importer: ${args.importer}`); // <--- ADD LOG
+                        return undefined; // Let esbuild handle others (likely keep external)
+                    });
+                    // Do the same for react-dom and its subpaths like react-dom/client
+                    build.onResolve({ filter: /^react-dom(\/.*)?$/ }, async (args) => {
+                        console.log(`[forceBundleReactPlugin] Attempting to resolve 'react-dom' imported by: ${args.importer}`); // <--- ADD LOG
+                        if (args.importer?.startsWith(path_1.default.join(REPO_ROOT_PATH, opts.src))) {
+                            const resolved = await build.resolve(args.path, { resolveDir: args.resolveDir, kind: args.kind });
+                            if (resolved.path) {
+                                console.log(`[forceBundleReactPlugin] Forcing bundle for 'react-dom' at path: ${resolved.path}`); // <--- ADD LOG
+                                return { path: resolved.path, external: false };
+                            }
+                        }
+                        console.log(`[forceBundleReactPlugin] Keeping 'react-dom' external for importer: ${args.importer}`); // <--- ADD LOG
+                        return undefined; // Let esbuild handle others
+                    });
+                }
+            };
             const task = esbuild_1.default.build({
                 bundle: true,
                 external: entryPoint.exclude,
@@ -132,7 +166,7 @@ function bundleESMTask(opts) {
                 platform: 'neutral', // makes esm
                 format: 'esm',
                 sourcemap: 'external',
-                plugins: [contentsMapper, externalOverride],
+                plugins: [contentsMapper, externalOverride, forceBundleReactPlugin],
                 target: ['es2022'],
                 loader: {
                     '.ttf': 'file',

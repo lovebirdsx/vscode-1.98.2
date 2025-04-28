@@ -92,7 +92,8 @@ function createCompile(src, { build, emitError, transpileOnly, preserveEnglish }
     }, err => reporter(err));
     function pipeline(token) {
         const bom = require('gulp-bom');
-        const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+        // const tsFilter = util.filter(data => /\.ts$/.test(data.path));
+        const tsFilter = util.filter(data => /\.tsx?$/.test(data.path));
         const isUtf8Test = (f) => /(\/|\\)test(\/|\\).*utf8/.test(f.path);
         const isRuntimeJs = (f) => f.path.endsWith('.js') && !f.path.includes('fixtures');
         const isCSS = (f) => f.path.endsWith('.css') && !f.path.includes('fixtures');
