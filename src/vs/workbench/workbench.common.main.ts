@@ -400,6 +400,6 @@ import './contrib/dropOrPasteInto/browser/dropOrPasteInto.contribution.js';
 import { AllowedExtensionsService } from '../platform/extensionManagement/common/allowedExtensionsService.js';
 
 // My Test
-import './contrib/myTest/browser/myTest.contribution.js';
+// import './contrib/myTest/browser/myTest.contribution.js';
 
 //#endregion

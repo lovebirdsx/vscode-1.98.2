@@ -38,7 +38,7 @@ export class TestReactEditor extends EditorPane {
 		super(TestReactEditor.ID, group, telemetryService, themeService, storageService);
 	}
 
-	override createEditor(parent: HTMLElement): void {
+	protected override createEditor(parent: HTMLElement): void {
 		this.container = document.createElement('div');
 		// const root = ReactDOM.createRoot(this.container);
 

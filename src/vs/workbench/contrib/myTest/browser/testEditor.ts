@@ -25,7 +25,7 @@ export class TestEditor extends EditorPane {
 		super(TestEditor.ID, group, telemetryService, themeService, storageService);
 	}
 
-	override createEditor(parent: HTMLElement): void {
+	protected override createEditor(parent: HTMLElement): void {
 		const container = document.createElement('div');
 		container.style.fontSize = '20px';
 		container.style.textAlign = 'center';
